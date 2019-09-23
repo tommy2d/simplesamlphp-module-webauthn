@@ -71,8 +71,9 @@ class Database extends Store
 
     /**
      * Called after unserialization.
+     * @return void
      */
-    public function __wakeup()
+    public function __wakeup() : void
     {
         $this->db = \SimpleSAML\Database::getInstance(Configuration::loadFromArray($this->config));
     }
@@ -160,16 +161,16 @@ class Database extends Store
     public function storeTokenData(string $userId, string $credentialId, string $credential, int $signCounter, string $friendlyName) : bool
     {
         $st = $this->db->write(
-                'INSERT INTO credentials ' .
-                '(user_id, credentialId, credential, signCounter, friendlyName) VALUES (:userId,:credentialId,'.
-                ':credential,:signCounter,:friendlyName)',
-                [
-                    'userId' => $userId,
-                    'credentialId' => $credentialId,
-                    'credential' => $credential,
-                    'signCounter' => $signCounter,
-                    'friendlyName' => $friendlyName
-                ]
+            'INSERT INTO credentials ' .
+            '(user_id, credentialId, credential, signCounter, friendlyName) VALUES (:userId,:credentialId,'.
+            ':credential,:signCounter,:friendlyName)',
+            [
+                'userId' => $userId,
+                'credentialId' => $credentialId,
+                'credential' => $credential,
+                'signCounter' => $signCounter,
+                'friendlyName' => $friendlyName
+            ]
         );
 
         if ($st === false) {
@@ -189,8 +190,8 @@ class Database extends Store
     public function deleteTokenData(string $credentialId) : bool
     {
         $st = $this->db->write(
-                'DELETE FROM credentials WHERE credentialId = :credentialId',
-                ['credentialId' => $credentialId]
+            'DELETE FROM credentials WHERE credentialId = :credentialId',
+            ['credentialId' => $credentialId]
         );
 
         if ($st !== false) {
@@ -212,8 +213,8 @@ class Database extends Store
     public function updateSignCount(string $credentialId, int $signCounter) : bool
     {
         $st = $this->db->write(
-                'UPDATE credentials SET signCounter = :signCounter WHERE credentialId = :credentialId',
-                ['signCounter' => $signCounter, 'credentialId' => $credentialId]
+            'UPDATE credentials SET signCounter = :signCounter WHERE credentialId = :credentialId',
+            ['signCounter' => $signCounter, 'credentialId' => $credentialId]
         );
 
         if ($st !== false) {
@@ -236,8 +237,8 @@ class Database extends Store
         $ret = [];
 
         $st = $this->db->read(
-                'SELECT credentialId, credential, signCounter, friendlyName FROM credentials WHERE user_id = :userId',
-                ['userId' => $userId]
+            'SELECT credentialId, credential, signCounter, friendlyName FROM credentials WHERE user_id = :userId',
+            ['userId' => $userId]
         );
 
         if ($st === false) {
