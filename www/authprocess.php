@@ -7,6 +7,7 @@ use SimpleSAML\Logger;
 use SimpleSAML\Module;
 use SimpleSAML\Module\webauthn\WebAuthn\WebAuthnAbstractEvent;
 use SimpleSAML\Module\webauthn\WebAuthn\WebAuthnAuthenticationEvent;
+use Webmozart\Assert\Assert;
 
 if (session_status() != PHP_SESSION_ACTIVE) {
     session_cache_limiter('nocache');
@@ -33,6 +34,7 @@ $incomingID = bin2hex(WebAuthnAbstractEvent::base64url_decode($_POST['response_i
  */
 $publicKey = false;
 $previousCounter = -1;
+
 foreach ($state['FIDO2Tokens'] as $oneToken) {
     if ($oneToken[0] == $incomingID) {
         // Credential ID is eligible for user $state['FIDO2Username']; using publicKey $oneToken[1] with current counter value $oneToken[2]
@@ -52,7 +54,9 @@ $authObject = new WebAuthnAuthenticationEvent(
     $state['IdPMetadata']['entityid'], 
     base64_decode($_POST['authenticator_data']), 
     base64_decode($_POST['client_data_raw']), 
+    /** @psalm-suppress PossiblyUndefinedGlobalVariable */
     $oneToken[0],
+    /** @psalm-suppress PossiblyUndefinedGlobalVariable */
     $oneToken[1], 
     base64_decode($_POST['signature']), 
     $debugEnabled
